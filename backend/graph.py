@@ -9,6 +9,7 @@ import numpy as np
 # Represents a vertex on a graph overlaid on the Earth's surface.
 # @field lat float The latitude of the point.
 # @field lng float The longitude of the point.
+# @field edges Edge[] The edges this vertex is connected to.
 # @field weight float How appropriate this location is for a subway station.
 #                     A lower weight value means that it's more appropriate.
 # @field index int The index this has in its graph's vertex array.
@@ -16,6 +17,7 @@ class Vertex:
     def __init__(self, lat: float, lng: float, weight: float=None, index: int=None) -> None:
         self.lat = lat
         self.lng = lng
+        self.edges = []
         self.weight = weight
         self.index = index
 
@@ -28,6 +30,9 @@ class Edge:
         self.vtx1 = vtx1
         self.vtx2 = vtx2
         self.weight = weight
+        
+        self.vtx1.edges.append(self)
+        self.vtx2.edges.append(self)
 
 # Represents a collection of vertices and any edges that may connect them.
 # @field vertices Vertex[] The set of vertices in the graph.
