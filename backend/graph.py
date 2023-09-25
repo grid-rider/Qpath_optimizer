@@ -2,6 +2,8 @@
 # @author Evan Brody
 # @brief Implements classes for working with undirected, weighted graphs.
 
+import numpy as np
+
 # TODO: Add automatic weight calculation to the constructors for Vertex and Edge, once the eval functions are in a workable state.
 
 # Represents a vertex on a graph overlaid on the Earth's surface.
