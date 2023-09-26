@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { Avatar, AvatarBadge } from "@chakra-ui/react";
+//import { Avatar, AvatarBadge } from "@chakra-ui/react";
 import GoogleMapReact from "google-map-react";
-import { m } from "framer-motion";
 //import Polyline from "google-map-react";
 
 require("dotenv").config();
@@ -61,17 +60,18 @@ export function Map({
         title: "End",
       })
     );
+    console.log("map loaded");
   };
 
   const _onClick = ({ lat, lng }) => {
     if (choosingStartpoint) {
       setStartpoint({ lat, lng });
       startMarker.setPosition({ lat, lng });
-      console.log(`startpoint:${startpoint.lat} ${startpoint.lng})}`);
+      console.log(`startpoint:${startpoint?.lat} ${startpoint?.lng})}`);
     } else {
       setEndpoint({ lat, lng });
       endMarker.setPosition({ lat, lng });
-      console.log(`endpoint:${endpoint.lat} ${endpoint.lng})}`);
+      console.log(`endpoint:${endpoint?.lat} ${endpoint?.lng})}`);
     }
   };
 
