@@ -26,7 +26,7 @@ class Vertex:
     # @field other Vertex The vertex to calculate distance to.
     # @return float The distance to the other vertex.
     def dist(self, other: Vertex) -> float:
-        return sqrt((self.lat - other.lat) ** 2 + (self.lng - other.lng) ** 2)
+        return math.sqrt((self.lat - other.lat) ** 2 + (self.lng - other.lng) ** 2)
 
 # Represents a connection between two vertices.
 # @field vtx1 Vertex The first vertex.
