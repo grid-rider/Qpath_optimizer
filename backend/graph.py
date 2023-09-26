@@ -4,12 +4,11 @@
 
 from __future__ import annotations
 from shapely.geometry import Point, Polygon
+from PathFinder import PathFinder
 import numpy as np
 import math
 
 # TODO: Add automatic weight calculation to the constructors for Vertex and Edge, once the eval functions are in a workable state.
-
-PENALTY = 99999
 
 # Represents a cluster of population.
 # @field lon float The longitude of the point.
@@ -35,7 +34,8 @@ class PopPoint:
 #                     A lower weight value means that it's more appropriate.
 # @field index int The index this has in its graph's vertex array.
 class Vertex:
-    pop_rad = 1 / 60 # in degrees, approx. 1 mile
+    min_dist = 1 / 60 # approx. 1 mile
+    pop_rad = 1 / 60 # approx. 1 mile
     def __init__(self, lon: float, lat: float, weight: float=None, index: int=None) -> None:
         self.lon = lon
         self.lat = lat
@@ -61,7 +61,7 @@ class Vertex:
         if weighted_pop_count != 0:
             self.weight = 1 / weighted_pop_count
         else:
-            self.weight = float('inf')
+            self.weight = PathFinder.penalty
 
 # Represents a connection between two vertices.
 # @field vtx1 Vertex The first vertex.
@@ -80,14 +80,21 @@ class Edge:
     # @return float The distance from vertex 1 to vertex 2.
     def length(self) -> float:
         return self.vtx1.dist(self.vtx2)
+    
+    # Evaluates how "costly" it is to move along this edge.
+    def eval(self) -> None:
+        self.weight = self.vtx1.weight + self.vtx2.weight + self.length()
+        
 
 # Represents a collection of vertices and any edges that may connect them.
 # @field vertices Vertex[] The set of vertices in the graph.
 # @field edges Edge[] The set of edges in the graph.
+# @field ppoints PopPoint[] The relevant population data.
 class Graph:
-    def __init__(self, vertices: list=[], edges: list=[]) -> None:
+    def __init__(self, vertices: list=[], edges: list=[], ppoints: list=[]) -> None:
         self.vertices = vertices.copy()
         self.edges = edges.copy()
+        self.ppoints = ppoints.copy()
         
         for i, v in enumerate(self.vertices):
             v.index = i
@@ -96,6 +103,11 @@ class Graph:
     # @param v Vertex The vertex to add.
     def add_vertex(self, v: Vertex) -> None:
         self.vertices.append(v)
+        v.index = len(self.vertices) - 1
+        for v2 in self.vertices:
+            if v.dist(v2) > Vertex.min_dist: continue # TEMP
+            new_edge = self.connect_vertices(v.index, v2.index)
+            if new_edge is not None: new_edge.eval()
     
     # Adds an edge to the graph.
     # @param e Edge The edge to add.
@@ -112,7 +124,7 @@ class Graph:
                edge.vtx1.index == v2 and edge.vtx2.index == v1:
                 return None
         
-        new_edge = Edge(v1, v2)
+        new_edge = Edge(self.vertices[v1], self.vertices[v2])
         self.edges.append(new_edge)
         
         return new_edge
@@ -123,16 +135,16 @@ class Graph:
 
         # Creates a regular 2-D array with weights.
         # Initializes all weights to infinity.
-        reg_matrix = [[float('inf')] * len(self.vertices) for _ in range(len(self.vertices))]
+        reg_matrix = [[PathFinder.penalty] * len(self.vertices) for _ in range(len(self.vertices))]
         for edge in self.edges:
             i1 = edge.vtx1.index
             i2 = edge.vtx2.index
             reg_matrix[i1][i2] = edge.weight
             reg_matrix[i2][i1] = edge.weight
 
-        # Makes sure weights of edges that start and end at the same vertex are infinity.
-        for i in range(len(self.edges)):
-            reg_matrix[i][i] = float('inf')
+        # Makes sure weights of edges that start and end at the same vertex are 0
+        for i in range(len(self.vertices)):
+            reg_matrix[i][i] = 0
 
         # Converts regular array to numpy array.
         np_matrix = []

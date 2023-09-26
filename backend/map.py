@@ -14,14 +14,15 @@ from graph import (
 )
 
 LON_MIN = -74.28
-LAT_MIN = 40.48
 LON_MAX = -73.65
+LAT_MIN = 40.48
 LAT_MAX = 40.93
-
 PRECISION = 20
-
 NYC_CSV = "data/nyc_pop_data.csv"
 
+# Generates a list of PopPoints given a file to read from.
+# @param filename str The name of the file to read from.
+# @return PopPoint[] A list of PopPoints with the given data.
 def gen_pgrid(filename: str) -> list:
     nyc_pop = pd.read_csv(filename)
 
@@ -36,6 +37,10 @@ def gen_pgrid(filename: str) -> list:
         
     return pgrid
 
+# Generates a list of vertices given a list of PopPoints
+# to calculate weights from.
+# @param pgrid PopPoints[] A list of PopPoints to calculate weights with
+# @return Vertex[] A list of weighted vertices
 def gen_vgrid(pgrid: list) -> list:
     lons = np.linspace(LON_MIN, LON_MAX, PRECISION)
     lats = np.linspace(LAT_MIN, LAT_MAX, PRECISION)
@@ -50,6 +55,20 @@ def gen_vgrid(pgrid: list) -> list:
 
     return vgrid
 
-def get_nyc_grid():
-    pgrid = gen_pgrid()
-    return gen_vgrid(pgrid)
+# Generates a graph using NYC population data.
+# @return Graph A graph with weighted vertices and edges.
+def get_nyc_graph() -> Graph:
+    pgrid = gen_pgrid(NYC_CSV)
+    vgrid = gen_vgrid(pgrid)
+    
+    nyc_graph = Graph(vgrid)
+    nyc_graph.ppoints = pgrid
+    
+    for i, v1 in enumerate(vgrid):
+        for j, v2 in enumerate(vgrid):
+            if i == j: continue
+            if v1.dist(v2) > Vertex.min_dist: continue
+            edge = nyc_graph.connect_vertices(i, j)
+            if edge is not None: edge.eval()
+    
+    return nyc_graph

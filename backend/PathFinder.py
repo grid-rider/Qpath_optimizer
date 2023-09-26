@@ -100,6 +100,7 @@ class PathFinder:
         operator, offset = qp.to_ising()
         algorithm_globals.random_seed = int(time.time())
         
+        npme_mes = NumPyMinimumEigensolver()
         qaoa_mes = QAOA(sampler=Sampler(), optimizer=COBYLA(), initial_point=[0.0, 0.0])
         qaoa = MinimumEigenOptimizer(qaoa_mes)
         qaoa_sol = qaoa.solve(qp)
@@ -112,7 +113,9 @@ class PathFinder:
     # @return array Ordered indices of vertices in the optimal path
     def find_sp(self, s: int, t: int) -> MinimumEigenOptimizationResult:
         qubo = self.qp_from_matrix(s, t)
+        print("Solving...")
         sol = self.solve_qp(qubo)
+        print("Solved.")
         vdict = sol.variables_dict
 
         hops = [int(var[-1]) for var in vdict if vdict[var]]
