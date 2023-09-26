@@ -41,6 +41,11 @@ class Edge:
         self.vtx1.edges.append(self)
         self.vtx2.edges.append(self)
 
+    # Returns the length of this edge.
+    # @return float The distance from vertex 1 to vertex 2.
+    def length() -> float:
+        return self.vtx1.dist(self.vtx2)
+
 # Represents a collection of vertices and any edges that may connect them.
 # @field vertices Vertex[] The set of vertices in the graph.
 # @field edges Edge[] The set of edges in the graph.
