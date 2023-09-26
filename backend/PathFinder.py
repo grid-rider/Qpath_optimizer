@@ -30,12 +30,12 @@ from docplex.mp.model import Model
 # For random seeding
 import time
 
-PENALTY = 99999 # Arbitrarily large number for constraint penalties
-
 # Provides functionality for finding the shortest
 # path between two nodes in an undirected weighted
 # graph by solving a QUBO using QAOA.
 class PathFinder:
+    max_hops = 3 # Max number of steps to go from start to end in a graph
+    penalty = 99999 # Arbitrarily large number for constraint penalties
     # @param wm ndarray 2D array of edge weights
     def __init__(self, wm: np.ndarray) -> None:
         assert wm.ndim == 2 # Array must be 2D.
@@ -44,52 +44,51 @@ class PathFinder:
         self.wm = wm # Weight matrix for edges
         self.cf_mdl = Model("sp_qubo") # Cost function model
     
-    # Generates a QUBO equation from a number of steps,
-    # a starting point, an ending point, and the QUBOSolver's
-    # weight matrix for edges.
-    # @param p int Number of steps from start to end
+    # Generates a QUBO equation from a starting point, an ending
+    # point, and the PathFinder's weight matrix for edges.
     # @param s int Index of start vertex
     # @param t int Index of end vertex
     # @return QuadraticProgram The generated QUBO equation
-    def qp_from_matrix(self, p: int, s: int, t: int) -> QuadraticProgram:
+    def qp_from_matrix(self, s: int, t: int) -> QuadraticProgram:
         if not self.wm.any(): return
         
         assert self.wm.shape[0] == self.wm.shape[1] # Matrix must be square
         n = self.wm.shape[0]
         
         # 2D array that represents the binary variables
-        # within the path matrix (p x n matrix)
-        bv_mtx = self.cf_mdl.binary_var_matrix(p, n, 'x')
+        # within the path matrix (max_hops x n matrix)
+        bv_mtx = self.cf_mdl.binary_var_matrix(self.max_hops, n, 'x')
         
         # Add weight sum to cost function
         cf_sum = []
-        for i in range(p-1):
+        for i in range(self.max_hops-1):
             # Where j and k are indices of vertices
             for j in range(n):
                 for k in range(n):
                     cf_sum.append(self.wm[j][k] * bv_mtx[(i, j)] * bv_mtx[(i+1, k)])
         
         # Must start at s
-        cf_sum.append(PENALTY * ((1 - bv_mtx[(0, s)]) ** 2))
+        cf_sum.append(self.penalty * ((1 - bv_mtx[(0, s)]) ** 2))
         # Must end at t
-        cf_sum.append(PENALTY * ((1 - bv_mtx[(p-1, t)]) ** 2))
+        cf_sum.append(self.penalty * ((1 - bv_mtx[(self.max_hops-1, t)]) ** 2))
         
         # Must only visit one vertex per hop
         row_sum = []
-        for i in range(p):
+        for i in range(self.max_hops):
             for j in range(n):
                 row_sum.append(bv_mtx[(i, j)])
-            cf_sum.append(PENALTY * ((1 - self.cf_mdl.sum(row_sum)) ** 2))
+            cf_sum.append(self.penalty * ((1 - self.cf_mdl.sum(row_sum)) ** 2))
             row_sum.clear()
-            
+        
+        # NOT NECESSARY
         # Must only visit any given vertex once
-        column_sum = []
-        for i in range(n):
-            for j in range(p):
-                column_sum.append(bv_mtx[(j, i)])
-            clmn_sum_exp = self.cf_mdl.sum(column_sum)
-            cf_sum.append(PENALTY * (clmn_sum_exp * (clmn_sum_exp - 1)))
-            column_sum.clear()
+        # column_sum = []
+        # for i in range(n):
+        #     for j in range(p):
+        #         column_sum.append(bv_mtx[(j, i)])
+        #     clmn_sum_exp = self.cf_mdl.sum(column_sum)
+        #     cf_sum.append(self.penalty * (clmn_sum_exp * (clmn_sum_exp - 1)))
+        #     column_sum.clear()
         
         self.cf_mdl.minimize(self.cf_mdl.sum(cf_sum))
         return from_docplex_mp(self.cf_mdl)
@@ -108,13 +107,17 @@ class PathFinder:
         return qaoa_sol
     
     # Finds the shortest path from s to t in p hops
-    # @param p int Number of hops allowed
     # @param s int Index of start vertex
     # @param t int Index of end vertex
-    # @return int[] Ordered indices of vertices in the optimal path
-    def find_sp(self, p: int, s: int, t: int) -> MinimumEigenOptimizationResult:
-        qubo = self.qp_from_matrix(p, s, t)
+    # @return array Ordered indices of vertices in the optimal path
+    def find_sp(self, s: int, t: int) -> MinimumEigenOptimizationResult:
+        qubo = self.qp_from_matrix(s, t)
         sol = self.solve_qp(qubo)
         vdict = sol.variables_dict
 
-        return [int(var[-1]) for var in vdict if vdict[var]]
+        hops = [int(var[-1]) for var in vdict if vdict[var]]
+        path = []
+        for i in hops:
+            if i not in path: path.append(i)
+        
+        return path
