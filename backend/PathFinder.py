@@ -111,7 +111,7 @@ class PathFinder:
     # @param p int Number of hops allowed
     # @param s int Index of start vertex
     # @param t int Index of end vertex
-    # @return array Ordered indices of vertices in the optimal path
+    # @return int[] Ordered indices of vertices in the optimal path
     def find_sp(self, p: int, s: int, t: int) -> MinimumEigenOptimizationResult:
         qubo = self.qp_from_matrix(p, s, t)
         sol = self.solve_qp(qubo)
