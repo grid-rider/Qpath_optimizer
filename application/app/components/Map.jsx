@@ -1,40 +1,37 @@
-import React from "react";
+import React, { useState } from "react";
 import { Avatar, AvatarBadge } from "@chakra-ui/react";
 import GoogleMapReact from "google-map-react";
+import { m } from "framer-motion";
 //import Polyline from "google-map-react";
 
 require("dotenv").config();
 
+const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+
 /**
- * Populates the provided state variables with the startpoint, midpoints, and endpoint
+ * Populates the provided state variable: startpoint and endpoint.
+ * The startpoint, midpoints, and endpoint are objects with lat and lng properties.
+ * The choosingStartpoint is a boolean that is true if the user is currently
+ * choosing the startpoint and false if the user is currently choosing the endpoint.
  * @param {object:{lat,lng}} startpoint
  * @param {array:[{lat,lng},...,{lat,lng}]} midpoints
  * @param {object:{lat,lng}} endpoint
+ * @param {boolean} choosingStartpoint
  * @param {function} setStartpoint
- * @param {function} setMidpoints
  * @param {function} setEndpoint
  * @returns
  */
 export function Map({
   startpoint,
-  endpoint,
   midpoints,
+  endpoint,
+  choosingStartpoint,
   setStartpoint,
   setEndpoint,
-  setMidpoints,
 }) {
-  // Initial values for testing. TODO: Replace with user input or API data
-  startpoint = { lat: 40.7731, lng: -73.991321 };
-  midpoints = [
-    { lat: 40.7631, lng: -73.991321 },
-    { lat: 40.7531, lng: -73.991321 },
-    { lat: 40.7431, lng: -73.991321 },
-  ];
-  endpoint = { lat: 40.7331, lng: -73.971321 };
-
-  const handleApiLoaded = (map, maps) => {
-    // Use map and maps objects
-  };
+  const [startMarker, setStartMarker] = useState(null);
+  const [midpointMarkers, setMidpointMarkers] = useState([]);
+  const [endMarker, setEndMarker] = useState(null);
 
   // Set the default location of the map to be NYC
   const defaultGeoLoc = {
@@ -45,35 +42,54 @@ export function Map({
     zoom: 13,
   };
 
+  const handleApiLoaded = (map, maps) => {
+    setStartMarker(
+      new maps.Marker({
+        map,
+        title: "Start",
+      })
+    );
+    setMidpointMarkers(
+      new maps.Marker({
+        map,
+        title: "Midpoint",
+      })
+    );
+    setEndMarker(
+      new maps.Marker({
+        map,
+        title: "End",
+      })
+    );
+  };
+
+  const _onClick = ({ lat, lng }) => {
+    if (choosingStartpoint) {
+      setStartpoint({ lat, lng });
+      startMarker.setPosition({ lat, lng });
+      console.log(`startpoint:${startpoint.lat} ${startpoint.lng})}`);
+    } else {
+      setEndpoint({ lat, lng });
+      endMarker.setPosition({ lat, lng });
+      console.log(`endpoint:${endpoint.lat} ${endpoint.lng})}`);
+    }
+  };
+
   // Create an array of coordinates for the polyline
   const polylineCoordinates = [startpoint, ...midpoints, endpoint];
 
   return (
     <div style={{ height: "100vh", width: "100%" }}>
       <GoogleMapReact
-        bootstrapURLKeys={{ key: process.env.GOOGLE_MAP_API_KEY }}
+        bootstrapURLKeys={{
+          key: GOOGLE_MAPS_API_KEY,
+        }}
         defaultCenter={defaultGeoLoc.center}
         defaultZoom={defaultGeoLoc.zoom}
         yesIWantToUseGoogleMapApiInternals
         onGoogleApiLoaded={({ map, maps }) => handleApiLoaded(map, maps)}
+        onClick={_onClick}
       >
-        {/* Display the startpoint as an Avatar on the map */}
-        <Avatar lat={startpoint.lat} lng={startpoint.lng}>
-          <AvatarBadge boxSize="24px" bg="green.500" />
-        </Avatar>
-
-        {/* Display midpoints as Avatars on the map */}
-        {midpoints.map((midpoint, index) => (
-          <Avatar key={index} lat={midpoint.lat} lng={midpoint.lng}>
-            <AvatarBadge boxSize="16px" bg="#696969" />
-          </Avatar>
-        ))}
-
-        {/* Display the endpoint as an Avatar on the map */}
-        <Avatar lat={endpoint.lat} lng={endpoint.lng}>
-          <AvatarBadge boxSize="24px" bg="#7C5CDA" />
-        </Avatar>
-
         {/* Add a Polyline component to draw lines (currently not working) */}
         {/* <Polyline path={polylineCoordinates} /> */}
       </GoogleMapReact>
