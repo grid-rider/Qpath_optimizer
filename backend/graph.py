@@ -2,22 +2,43 @@
 # @author Evan Brody, Ninad Moharir
 # @brief Implements classes for working with undirected, weighted graphs.
 
+from __future__ import annotations
+from shapely.geometry import Point, Polygon
 import numpy as np
 import math
 
 # TODO: Add automatic weight calculation to the constructors for Vertex and Edge, once the eval functions are in a workable state.
 
-# Represents a vertex on a graph overlaid on the Earth's surface.
+PENALTY = 99999
+
+# Represents a cluster of population.
+# @field lon float The longitude of the point.
 # @field lat float The latitude of the point.
-# @field lng float The longitude of the point.
+# @field pop int The total population associated with this point.
+class PopPoint:
+    def __init__(self, lon: float, lat: float, pop: int) -> None:
+        self.lon = lon
+        self.lat = lat
+        self.pop = pop
+    
+    # Returns the distance from this point to a vertex.
+    # @field other Vertex The vertex to calculate distance to.
+    # @return float The distance to the vertex.
+    def dist(self, other: Vertex):
+        return math.sqrt((self.lon - other.lon) ** 2 + (self.lat - other.lat) ** 2)
+
+# Represents a vertex on a graph overlaid on the Earth's surface.
+# @field lon float The longitude of the vertex.
+# @field lat float The latitude of the vertex.
 # @field edges Edge[] The edges this vertex is connected to.
 # @field weight float How appropriate this location is for a subway station.
 #                     A lower weight value means that it's more appropriate.
 # @field index int The index this has in its graph's vertex array.
 class Vertex:
-    def __init__(self, lat: float, lng: float, weight: float=None, index: int=None) -> None:
+    pop_rad = 1 / 60 # in degrees, approx. 1 mile
+    def __init__(self, lon: float, lat: float, weight: float=None, index: int=None) -> None:
+        self.lon = lon
         self.lat = lat
-        self.lng = lng
         self.edges = []
         self.weight = weight
         self.index = index
@@ -26,7 +47,21 @@ class Vertex:
     # @field other Vertex The vertex to calculate distance to.
     # @return float The distance to the other vertex.
     def dist(self, other: Vertex) -> float:
-        return math.sqrt((self.lat - other.lat) ** 2 + (self.lng - other.lng) ** 2)
+        return math.sqrt((self.lon - other.lon) ** 2 + (self.lat - other.lat) ** 2)
+    
+    # Evaluates the appropriateness of this location for a subway station.
+    # @param pop_points PopPoint[] The population points to consider.
+    def eval(self, pop_points: list) -> None:
+        weighted_pop_count = 0
+        for p in pop_points:
+            dist = p.dist(self)
+            if dist <= self.pop_rad and dist != 0:
+                weighted_pop_count += p.pop / dist
+        
+        if weighted_pop_count != 0:
+            self.weight = 1 / weighted_pop_count
+        else:
+            self.weight = float('inf')
 
 # Represents a connection between two vertices.
 # @field vtx1 Vertex The first vertex.
