@@ -1,6 +1,7 @@
 import React from "react";
 import { Avatar, AvatarBadge } from "@chakra-ui/react";
 import GoogleMapReact from "google-map-react";
+import Polyline from "google-map-react";
 
 require("dotenv").config();
 
@@ -41,6 +42,9 @@ export function Map({
     // use map and maps objects
   };
 
+  // Create an array of coordinates for the polyline
+  const polylineCoordinates = [startpoint, ...midpoints, endpoint];
+
   return (
     <div style={{ height: "100vh", width: "100%" }}>
       <GoogleMapReact
@@ -61,6 +65,9 @@ export function Map({
         <Avatar lat={endpoint.lat} lng={endpoint.lng}>
           <AvatarBadge boxSize="24px" bg="#7C5CDA" />
         </Avatar>
+
+        {/* Add a Polyline component to draw lines (currently not working)*/}
+        {/* <Polyline path={polylineCoordinates} /> */}
       </GoogleMapReact>
     </div>
   );
