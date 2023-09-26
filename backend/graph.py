@@ -1,8 +1,9 @@
 # @file graph.py
-# @author Evan Brody
+# @author Evan Brody, Ninad Moharir
 # @brief Implements classes for working with undirected, weighted graphs.
 
 import numpy as np
+import math
 
 # TODO: Add automatic weight calculation to the constructors for Vertex and Edge, once the eval functions are in a workable state.
 
@@ -20,6 +21,12 @@ class Vertex:
         self.edges = []
         self.weight = weight
         self.index = index
+
+    # Returns the distance from this vertex to another.
+    # @field other Vertex The vertex to calculate distance to.
+    # @return float The distance to the other vertex.
+    def dist(self, other: Vertex) -> float:
+        return sqrt((self.lat - other.lat) ** 2 + (self.lng - other.lng) ** 2)
 
 # Represents a connection between two vertices.
 # @field vtx1 Vertex The first vertex.
