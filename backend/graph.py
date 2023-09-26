@@ -43,7 +43,7 @@ class Edge:
 
     # Returns the length of this edge.
     # @return float The distance from vertex 1 to vertex 2.
-    def length() -> float:
+    def length(self) -> float:
         return self.vtx1.dist(self.vtx2)
 
 # Represents a collection of vertices and any edges that may connect them.
