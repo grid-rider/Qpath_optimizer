@@ -24,6 +24,7 @@ export function Map({
   midpoints,
   endpoint,
   choosingStartpoint,
+  usingCurser,
   setStartpoint,
   setEndpoint,
 }) {
@@ -87,6 +88,7 @@ export function Map({
   };
 
   const _onClick = ({ lat, lng }) => {
+    if (usingCurser) return;
     if (choosingStartpoint) {
       setStartpoint({ lat, lng });
       startMarker.setPosition({ lat, lng });
