@@ -46,6 +46,9 @@ export function Map({
         position: startpoint,
         map,
         title: "Start",
+        icon: {
+          url: "/startpoint.svg",
+        },
       })
     );
     setMidpointMarkers(
@@ -54,6 +57,9 @@ export function Map({
           position: midpoint,
           map,
           title: "Midpoint",
+          icon: {
+            url: "/midpoint.svg",
+          },
         });
       })
     );
@@ -62,15 +68,18 @@ export function Map({
         position: endpoint,
         map,
         title: "End",
+        icon: {
+          url: "/endpoint.svg",
+        },
       })
     );
     setPathLine(
       new maps.Polyline({
         path: [startpoint, ...midpoints, endpoint],
         geodesic: true,
-        strokeColor: "#000000",
+        strokeColor: "#696969",
         strokeOpacity: 1.0,
-        strokeWeight: 5,
+        strokeWeight: 3,
         map: map,
       })
     );
