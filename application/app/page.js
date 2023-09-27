@@ -22,9 +22,7 @@ export default function Home() {
         endpoint={endpoint}
         setStartpoint={setStartpoint}
         setEndpoint={setEndpoint}
-        setMidpoints={setMidpoints}
         choosingStartpoint={choosingStartpoint}
-        setChoosingStartpoint={setChoosingStartpoint}
       />
     </main>
   );
