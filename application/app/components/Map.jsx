@@ -11,10 +11,13 @@ const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
  * The startpoint, midpoints, and endpoint are objects with lat and lng properties.
  * The choosingStartpoint is a boolean that is true if the user is currently
  * choosing the startpoint and false if the user is currently choosing the endpoint.
+ * The usingCurser is a boolean that is true if the user is currently using the curser
+ * and clicking will not change the startpoint or endpoint.
  * @param {object:{lat,lng}} startpoint
  * @param {array:[{lat,lng},...,{lat,lng}]} midpoints
  * @param {object:{lat,lng}} endpoint
  * @param {boolean} choosingStartpoint
+ * @param {boolean} usingCurser
  * @param {function} setStartpoint
  * @param {function} setEndpoint
  * @returns
