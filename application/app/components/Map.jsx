@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-//import { Avatar, AvatarBadge } from "@chakra-ui/react";
+import React, { useState, useEffect } from "react";
 import GoogleMapReact from "google-map-react";
 
 require("dotenv").config();
@@ -43,6 +42,26 @@ export function Map({
     },
     zoom: 13,
   };
+
+  //TODO: add a useEffect that updates the pathLine when the midpoints change
+  useEffect(() => {
+    if (startMarker != null) {
+      if (startpoint == null) {
+        startMarker.setPosition(null);
+        pathLine.setPath([]);
+      } else if (startpoint != null) {
+        startMarker.setPosition(startpoint);
+      }
+    }
+    if (endMarker != null) {
+      if (endpoint == null) {
+        endMarker.setPosition(null);
+        pathLine.setPath([]);
+      } else if (endpoint != null) {
+        endMarker.setPosition(endpoint);
+      }
+    }
+  }, [startpoint, midpoints, endpoint]);
 
   const handleApiLoaded = (map, maps) => {
     setStartMarker(
