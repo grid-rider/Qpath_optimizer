@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 //import { Avatar, AvatarBadge } from "@chakra-ui/react";
 import GoogleMapReact from "google-map-react";
-//import Polyline from "google-map-react";
 
 require("dotenv").config();
 
@@ -31,7 +30,7 @@ export function Map({
   const [startMarker, setStartMarker] = useState(null);
   const [midpointMarkers, setMidpointMarkers] = useState([]);
   const [endMarker, setEndMarker] = useState(null);
-
+  const [pathLine, setPathLine] = useState([]); // [startpoint, ...midpoints, endpoint
   // Set the default location of the map to be NYC
   const defaultGeoLoc = {
     center: {
@@ -44,20 +43,35 @@ export function Map({
   const handleApiLoaded = (map, maps) => {
     setStartMarker(
       new maps.Marker({
+        position: startpoint,
         map,
         title: "Start",
       })
     );
     setMidpointMarkers(
-      new maps.Marker({
-        map,
-        title: "Midpoint",
+      midpoints.map((midpoint) => {
+        return new maps.Marker({
+          position: midpoint,
+          map,
+          title: "Midpoint",
+        });
       })
     );
     setEndMarker(
       new maps.Marker({
+        position: endpoint,
         map,
         title: "End",
+      })
+    );
+    setPathLine(
+      new maps.Polyline({
+        path: [startpoint, ...midpoints, endpoint],
+        geodesic: true,
+        strokeColor: "#000000",
+        strokeOpacity: 1.0,
+        strokeWeight: 5,
+        map: map,
       })
     );
     console.log("map loaded");
@@ -67,16 +81,17 @@ export function Map({
     if (choosingStartpoint) {
       setStartpoint({ lat, lng });
       startMarker.setPosition({ lat, lng });
-      console.log(`startpoint:${startpoint?.lat} ${startpoint?.lng})}`);
+      console.log(`startpoint:${lat} ${lng})}`);
+      if (endpoint != null)
+        pathLine.setPath([{ lat, lng }, ...midpoints, endpoint]);
     } else {
       setEndpoint({ lat, lng });
       endMarker.setPosition({ lat, lng });
-      console.log(`endpoint:${endpoint?.lat} ${endpoint?.lng})}`);
+      console.log(`endpoint:${lat} ${lng})}`);
+      if (startpoint != null)
+        pathLine.setPath([startpoint, ...midpoints, { lat, lng }]);
     }
   };
-
-  // Create an array of coordinates for the polyline
-  const polylineCoordinates = [startpoint, ...midpoints, endpoint];
 
   return (
     <div style={{ height: "100vh", width: "100%" }}>
@@ -89,10 +104,7 @@ export function Map({
         yesIWantToUseGoogleMapApiInternals
         onGoogleApiLoaded={({ map, maps }) => handleApiLoaded(map, maps)}
         onClick={_onClick}
-      >
-        {/* Add a Polyline component to draw lines (currently not working) */}
-        {/* <Polyline path={polylineCoordinates} /> */}
-      </GoogleMapReact>
+      ></GoogleMapReact>
     </div>
   );
 }
