@@ -137,6 +137,7 @@ export function Map({
         yesIWantToUseGoogleMapApiInternals
         onGoogleApiLoaded={({ map, maps }) => handleApiLoaded(map, maps)}
         onClick={_onClick}
+        options={{disableDefaultUI: true}}
       ></GoogleMapReact>
     </div>
   );

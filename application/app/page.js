@@ -12,9 +12,11 @@ export default function Home() {
   const [endpoint, setEndpoint] = useState();
   const [choosingStartpoint, setChoosingStartpoint] = useState(true);
   const [usingCurser, setUsingCurser] = useState(false);
+
+
+
   return (
     <main>
-      <h1>Qpath Optimizer</h1>
       <Map
         startpoint={startpoint}
         midpoints={midpoints}
