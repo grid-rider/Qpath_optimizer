@@ -1,15 +1,26 @@
 import { Flex, Text, Divider, Image, Badge, Button } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 
+/**
+ * A helper function that wraps the stop icon and name in a flexbox.
+ * Purpose: to reduce code duplication in the Sidebar component.
+ * @param {string} type // "start", "mid", or "end"
+ * @param {string} name // The name tag of the stop
+ * @returns {JSX.Element} // The rendered JSX element for a stop item
+ */
 function StopItem({ type, name }) {
+  // Determine the icon URL based on the stop type
   const iconUrl =
     type === "start"
       ? "/startpoint.svg"
       : type === "end"
       ? "/endpoint.svg"
       : "/midpoint.svg";
+
+  // Determine the color scheme for the badge based on the stop type
   const colorScheme =
     type === "start" ? "teal" : type === "end" ? "purple" : "gray";
+
   return (
     <Flex
       flexDir={"row"}
@@ -96,7 +107,9 @@ export function Sidebar() {
         colorScheme={"blue"}
         borderRadius={"20px"}
         marginTop={"0.5rem"}
-        onClick={() => {}}
+        onClick={() => {
+          // Handle button click here
+        }}
       >
         Generate Path
       </Button>
