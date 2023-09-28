@@ -115,8 +115,8 @@ class PathFinder:
     # Finds the shortest path from s to t
     # @param s int Index of start vertex
     # @param t int Index of end vertex
-    # @return array Ordered indices of vertices in the optimal path
-    def find_sp(self, s: int, t: int) -> MinimumEigenOptimizationResult:
+    # @return list Ordered indices of vertices in the optimal path
+    def find_sp(self, s: int, t: int) -> list:
         qubo = self.qp_from_matrix(s, t)
         print("Solving...")
         sol = self.solve_qp(qubo)
