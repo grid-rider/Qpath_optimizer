@@ -16,11 +16,24 @@ def main(c1: tuple, c2: tuple):
     
     nyc_graph.add_vertex(s)
     nyc_graph.add_vertex(t)
+    edge = nyc_graph.connect_vertices(s.index, t.index)
+    nyc_graph.cull_not_in_rect(s, t)
     
-    print(nyc_graph.gen_matrix())
-    pf = PathFinder(nyc_graph.gen_matrix())
-    print(pf.find_sp(s.index, t.index))
+    nyc_matrix = nyc_graph.gen_matrix()
+    print("Matrix shape:", nyc_matrix.shape)
+    pf = PathFinder(nyc_matrix)
+    solution = pf.find_sp(s.index, t.index)
+    print(solution)
+    print("======")
+    coords = []
+    for i in solution:
+        v = nyc_graph.vertices[i]
+        coords.append((v.lat, v.lon))
+        print(v.lat, v.lon)
+        
+    return coords
 
-c1 = (-74.1, 40.5)
-c2 = (-74.0, 40.6)
-main(c1, c2)
+c3 = (-73.978138, 40.679835)
+c4 = (-73.917568, 40.718213)
+
+main(c3, c4)

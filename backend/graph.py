@@ -8,8 +8,6 @@ from PathFinder import PathFinder
 import numpy as np
 import math
 
-# TODO: Add automatic weight calculation to the constructors for Vertex and Edge, once the eval functions are in a workable state.
-
 # Represents a cluster of population.
 # @field lon float The longitude of the point.
 # @field lat float The latitude of the point.
@@ -61,17 +59,19 @@ class Vertex:
         if weighted_pop_count != 0:
             self.weight = 1 / weighted_pop_count
         else:
-            self.weight = PathFinder.penalty
+            self.weight = 1
 
 # Represents a connection between two vertices.
 # @field vtx1 Vertex The first vertex.
 # @field vtx2 Vertex The second vertex.
 # @field weight float How "costly" it is to move along this edge.
+# @field index int The index this has in its Graph's edge list.
 class Edge:
-    def __init__(self, vtx1: Vertex, vtx2: Vertex, weight: float=None) -> None:
+    def __init__(self, vtx1: Vertex, vtx2: Vertex, weight: float=None, index: int=None) -> None:
         self.vtx1 = vtx1
         self.vtx2 = vtx2
         self.weight = weight
+        self.index = index
         
         self.vtx1.edges.append(self)
         self.vtx2.edges.append(self)
@@ -83,8 +83,7 @@ class Edge:
     
     # Evaluates how "costly" it is to move along this edge.
     def eval(self) -> None:
-        self.weight = self.vtx1.weight + self.vtx2.weight + self.length()
-        
+        self.weight = self.vtx1.weight * self.vtx2.weight * (self.length() ** 2)
 
 # Represents a collection of vertices and any edges that may connect them.
 # @field vertices Vertex[] The set of vertices in the graph.
@@ -98,14 +97,18 @@ class Graph:
         
         for i, v in enumerate(self.vertices):
             v.index = i
+            
+        for i, e in enumerate(self.edges):
+            e.index = i
     
     # Adds a vertex to the graph.
     # @param v Vertex The vertex to add.
     def add_vertex(self, v: Vertex) -> None:
         self.vertices.append(v)
         v.index = len(self.vertices) - 1
+        # Connect it to every vertex past a given distance
         for v2 in self.vertices:
-            if v.dist(v2) > Vertex.min_dist: continue # TEMP
+            if v.dist(v2) < Vertex.min_dist: continue
             new_edge = self.connect_vertices(v.index, v2.index)
             if new_edge is not None: new_edge.eval()
     
@@ -113,21 +116,75 @@ class Graph:
     # @param e Edge The edge to add.
     def add_edge(self, e: Edge) -> None:
         self.edges.append(e)
+        e.index = len(self.edges) - 1
+        e.eval()
+        
+    # Removes a vertex from the graph along with all of its edges.
+    # @param vi int The index of the vertex to remove.
+    def remove_vertex(self, vi: int) -> None:
+        if vi > len(self.vertices) - 1: return
+        for i in range(vi+1, len(self.vertices)):
+            self.vertices[i].index -= 1
+        
+        removed_vertex = self.vertices.pop(vi)
+        removed_vertex.index = None
+        
+        to_remove = []
+        for e in self.edges:
+            if e.vtx1.index == None or e.vtx2.index == None:
+                to_remove.append(e.index)
+        
+        for i in range(len(to_remove) - 1, -1, -1):
+            self.remove_edge(to_remove[i])
+        
+    # Removes an edge from the graph.
+    # @param ei int The index of the edge to remove.
+    def remove_edge(self, ei: int) -> None:
+        if ei > len(self.edges) - 1: return
+    
+        for i in range(ei+1, len(self.edges)):
+            self.edges[i].index -= 1
+        
+        removed_edge = self.edges.pop(ei)
+        removed_edge.index = None
         
     # Connects two given vertices within the graph.
     # @param v1 Vertex The index of the first vertex.
     # @param v2 Vertex The index of the second vertex.
     # @return Edge The created edge, or None if creation fails.
-    def connect_vertices(self, v1: int, v2: int) -> Edge:
+    def connect_vertices(self, v1i: int, v2i: int) -> Edge:
         for edge in self.edges:
-            if edge.vtx1.index == v1 and edge.vtx2.index == v2 or \
-               edge.vtx1.index == v2 and edge.vtx2.index == v1:
+            if edge.vtx1.index == v1i and edge.vtx2.index == v2i or \
+               edge.vtx1.index == v2i and edge.vtx2.index == v1i:
                 return None
         
-        new_edge = Edge(self.vertices[v1], self.vertices[v2])
-        self.edges.append(new_edge)
+        new_edge = Edge(self.vertices[v1i], self.vertices[v2i])
+        self.add_edge(new_edge)
         
         return new_edge
+    
+    # Removes any vertices not within the rectangle specified
+    # by the two parameter vertices, along with any edges crossing
+    # outside the rectangle.
+    # @param v1 Vertex The first corner of the rectangle.
+    # @param v2 Vertex The second corner of the rectangle.
+    def cull_not_in_rect(self, v1: Vertex, v2: Vertex) -> None:
+        # Finding the corners of our rectangle
+        alat = v1.lat if v1.lat < v2.lat else v2.lat
+        blat = v1.lat if v1.lat > v2.lat else v2.lat
+        
+        alon = v1.lon if v1.lon < v2.lon else v2.lon
+        blon = v1.lon if v1.lon > v2.lon else v2.lon
+        
+        # Culling
+        to_remove = []
+        for v in self.vertices:
+            if v == v1 or v == v2: continue
+            if alat < v.lat < blat and alon < v.lon < blon: continue
+            to_remove.append(v.index)
+            
+        for i in range(len(to_remove) - 1, -1, -1):
+            self.remove_vertex(to_remove[i])
 
     # Generates a weight graph from the edges and vertices given.
     # @return 2-D numpy array The weight graph.

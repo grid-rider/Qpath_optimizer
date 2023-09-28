@@ -13,6 +13,7 @@ import networkx as nx
 from qiskit_optimization import QuadraticProgram
 from qiskit_optimization.translators import from_docplex_mp
 from qiskit_optimization.algorithms import (
+    GroverOptimizer,
     MinimumEigenOptimizer,
     MinimumEigenOptimizationResult,
     RecursiveMinimumEigenOptimizer,
@@ -51,6 +52,7 @@ class PathFinder:
     # @return QuadraticProgram The generated QUBO equation
     def qp_from_matrix(self, s: int, t: int) -> QuadraticProgram:
         if not self.wm.any(): return
+        if s is None or t is None: raise Exception
         
         assert self.wm.shape[0] == self.wm.shape[1] # Matrix must be square
         n = self.wm.shape[0]
@@ -82,13 +84,13 @@ class PathFinder:
         
         # NOT NECESSARY
         # Must only visit any given vertex once
-        # column_sum = []
-        # for i in range(n):
-        #     for j in range(p):
-        #         column_sum.append(bv_mtx[(j, i)])
-        #     clmn_sum_exp = self.cf_mdl.sum(column_sum)
-        #     cf_sum.append(self.penalty * (clmn_sum_exp * (clmn_sum_exp - 1)))
-        #     column_sum.clear()
+        column_sum = []
+        for i in range(n):
+            for j in range(self.max_hops):
+                column_sum.append(bv_mtx[(j, i)])
+            clmn_sum_exp = self.cf_mdl.sum(column_sum)
+            cf_sum.append(self.penalty * (clmn_sum_exp * (clmn_sum_exp - 1)))
+            column_sum.clear()
         
         self.cf_mdl.minimize(self.cf_mdl.sum(cf_sum))
         return from_docplex_mp(self.cf_mdl)
@@ -97,17 +99,20 @@ class PathFinder:
     # @param qp QuadraticProgram The QUBO to solve
     # @return MinimumEigenOptimizationResult The solved QUBO
     def solve_qp(self, qp: QuadraticProgram) -> MinimumEigenOptimizationResult:
-        operator, offset = qp.to_ising()
-        algorithm_globals.random_seed = int(time.time())
+        # algorithm_globals.random_seed = int(time.time())
+        
+        # npme_mes = NumPyMinimumEigensolver()
+        # qaoa_mes = QAOA(sampler=Sampler(), optimizer=COBYLA(), initial_point=[0.0, 0.0])
+        # qaoa = MinimumEigenOptimizer(qaoa_mes)
+        # qaoa_sol = qaoa.solve(qp)
         
         npme_mes = NumPyMinimumEigensolver()
-        qaoa_mes = QAOA(sampler=Sampler(), optimizer=COBYLA(), initial_point=[0.0, 0.0])
-        qaoa = MinimumEigenOptimizer(qaoa_mes)
-        qaoa_sol = qaoa.solve(qp)
+        npme = MinimumEigenOptimizer(npme_mes)
+        npme_sol = npme.solve(qp)
 
-        return qaoa_sol
+        return npme_sol
     
-    # Finds the shortest path from s to t in p hops
+    # Finds the shortest path from s to t
     # @param s int Index of start vertex
     # @param t int Index of end vertex
     # @return array Ordered indices of vertices in the optimal path
