@@ -122,10 +122,8 @@ class PathFinder:
         sol = self.solve_qp(qubo)
         print("Solved.")
         vdict = sol.variables_dict
-        print('functional val', sol.fval)
 
         hops = [int(var[-1]) for var in vdict if vdict[var]]
-        print("These are the hops: ", hops)
         path = []
         for i in hops:
             if i not in path: path.append(i)
