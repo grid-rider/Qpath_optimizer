@@ -3,22 +3,22 @@
 
 
 ## Welcome to Our Project
-The theme of the NYU Tandon HAQathon is sustainbility, and we are proud to be one of the seven teams this fall. At NYU, we value sustainbility, not as a slogan, but as our mission. Together, we wanted to build a tool that address sustainbility while using knowledge from both classical and quantum computing to reduce carbon footprint and improve efficiency. We depend heavily on public transport at new york city, but many times due to outdated designs, the public transport system requires a far longer route than the linear distance to the destination. We attempt to use quantum computing optimization techniques to simulate a path for future applications.
+The theme of the NYU Tandon HAQathon is sustainability, and we are proud to be one of the seven teams this fall. At NYU, we value sustainbility, not as a slogan, but as our mission. Together, we wanted to build a tool that addresses sustainbility by using techniques from both classical and quantum computing to reduce carbon footprint and improve efficiency. We depend heavily on public transport in New York City, but oftentimes, due to outdated designs, the public transport system requires a far longer route than the linear distance to the destination. We attempt to use quantum computing optimization techniques to simulate a path for future applications.
 
 
-introducing Qpath_optimizer, a path finding algorithm that uses optimizations to obtain the best result.
+Introducing QuiQ, a path finding algorithm that uses optimizations to obtain the best result.
 This tool utilizes open source data from NYC to generate data sets for calculation.
 The links to our source data is below:
 
-Population Density: https://catalog.data.gov/dataset/census-api-by-coordinates
+Population Density: https://www.kaggle.com/datasets/muonneutrino/new-york-city-census-data
+
+Borough Boundaries: https://data.cityofnewyork.us/City-Government/Borough-Boundaries/tqmj-j8zm
 
 All NYC subway stations: https://data.cityofnewyork.us/Transportation/Subway-Stations/arq3-7z49
 
-Qpath-optimizer uses quantum optimization techniques to provide an advantage in computing resource usage. Specifically, Qpath_optimizer uses Quadratic unconstrained binary optimization (QUBO) and Quantum Approximate Optimization Algorithm (QAOA), and materials we referenced to is linked below:
+Qpath-optimizer uses quantum optimization techniques to provide an advantage in computing resource usage. Specifically, QuiQ uses Quadratic Unconstrained Binary Optimization (QUBO) and Quantum Approximate Optimization Algorithm (QAOA), and materials we referenced to is linked below:
 
 Shortest path with quantum annealer: https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=9186612
-
-Further Optimizing with VQE: https://www.youtube.com/watch?v=AhEnvYgoA34
 
 This projects aims to save valuable time for future planning and can be generalized to many optimization problems. In specific, new subway route planning and water distribution.
 
