@@ -1,4 +1,6 @@
 # Qpath_optimizer by Team 7 for NYU Tandon HAQthaon 2023 Fall
+![Qpath_optimizer](https://github.com/grid-rider/Qpath_optimizer/assets/131626208/fb3a7af0-836a-4591-bcba-22e939015838)
+
 
 ## Welcome to Our Project
 Qpath_optimizer is path finding algorithm that uses optimizations for the best result.
@@ -17,6 +19,10 @@ Further Optimizing with VQE: https://www.youtube.com/watch?v=AhEnvYgoA34
 
 This projects aims to save valuable time for future planning and can be generalized to many optimization problems. In specific, new subway route planning and water distribution.
 
-Details on technical 
+Details on technical information and navigating through the code file is documented below.
+
 ## Frontend Discription
+// add info here
+
 ## Backend Discription
+### [a link](https://github.com/user/repo/blob/branch/other_file.md)
