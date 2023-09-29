@@ -5,14 +5,14 @@ import { ControlPannel } from "./components/ControlPannel";
 
 export default function Home() {
   const [startpoint, setStartpoint] = useState();
-  const [midpoints, setMidpoints] = useState([
-    { lat: 40.7431, lng: -73.971321 },
-    { lat: 40.7531, lng: -73.961321 },
-  ]); //default value for testing. Remove when done
+
+  // midpoints structured as follows: [{ lat: 40.7431, lng: -73.971321 }, { lat: 40.7531, lng: -73.961321 },]
+
+  const [midpoints, setMidpoints] = useState([]); //default value for testing. Remove when done
+
   const [endpoint, setEndpoint] = useState();
   const [choosingStartpoint, setChoosingStartpoint] = useState(true);
   const [usingCurser, setUsingCurser] = useState(false);
-
 
 
   return (

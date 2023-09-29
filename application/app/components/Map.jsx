@@ -15,6 +15,7 @@ const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
  * @param {object:{lat,lng}} startpoint
  * @param {array:[{lat,lng},...,{lat,lng}]} midpoints
  * @param {object:{lat,lng}} endpoint
+ * @param {array:[{lat,lng},...,{lat,lng}]} pathpoints
  * @param {boolean} choosingStartpoint
  * @param {boolean} usingCurser
  * @param {function} setStartpoint
@@ -25,6 +26,7 @@ export function Map({
   startpoint,
   midpoints,
   endpoint,
+  pathpoints,
   choosingStartpoint,
   usingCurser,
   setStartpoint,
@@ -33,7 +35,8 @@ export function Map({
   const [startMarker, setStartMarker] = useState(null);
   const [midpointMarkers, setMidpointMarkers] = useState([]);
   const [endMarker, setEndMarker] = useState(null);
-  const [pathLine, setPathLine] = useState([]); // [startpoint, ...midpoints, endpoint
+  const [pathLine, setPathLine] = useState([]); // [startpoint, ...midpoints, endpoint]
+
   // Set the default location of the map to be NYC
   const defaultGeoLoc = {
     center: {
@@ -63,6 +66,16 @@ export function Map({
     }
   }, [startpoint, midpoints, endpoint]);
 
+
+  useEffect(() => {
+    if( pathpoints != null && midpoints != null && endpoint != null){ //Guard
+        if(length(pathpoints) > 0 ){
+            pathLine.setPath([startpoint, ...midpoints, endpoint]);
+        }    
+    }
+
+  }, [pathpoints])
+
   const handleApiLoaded = (map, maps) => {
     setStartMarker(
       new maps.Marker({
@@ -74,6 +87,8 @@ export function Map({
         },
       })
     );
+
+
     setMidpointMarkers(
       midpoints.map((midpoint) => {
         return new maps.Marker({
@@ -86,6 +101,8 @@ export function Map({
         });
       })
     );
+
+
     setEndMarker(
       new maps.Marker({
         position: endpoint,
@@ -96,6 +113,8 @@ export function Map({
         },
       })
     );
+
+
     setPathLine(
       new maps.Polyline({
         path: [startpoint, ...midpoints, endpoint],
@@ -106,7 +125,9 @@ export function Map({
         map: map,
       })
     );
+
     console.log("map loaded");
+
   };
 
   const _onClick = ({ lat, lng }) => {
@@ -115,14 +136,10 @@ export function Map({
       setStartpoint({ lat, lng });
       startMarker.setPosition({ lat, lng });
       console.log(`startpoint:${lat} ${lng})}`);
-      if (endpoint != null)
-        pathLine.setPath([{ lat, lng }, ...midpoints, endpoint]);
     } else {
       setEndpoint({ lat, lng });
       endMarker.setPosition({ lat, lng });
       console.log(`endpoint:${lat} ${lng})}`);
-      if (startpoint != null)
-        pathLine.setPath([startpoint, ...midpoints, { lat, lng }]);
     }
   };
 
