@@ -25,7 +25,11 @@ This projects aims to save valuable time for future planning and can be generali
 Details on technical information and navigating through the code file is documented below.
 
 ## Frontend Discription
-// add info here
+#### Control panel
+The control panel at the bottom allows the user to choose the starting point, or the endpoint, clear the view, or just the cursor to drag the map.
+
+#### Side panel
+Users can use the side panel on the right to view their choice and generate the path.
 
 ## Backend Discription
 ### [Data](https://github.com/grid-rider/Qpath_optimizer/tree/dev/backend/data)
