@@ -2,6 +2,7 @@
 # @author Evan Brody
 # @brief Defines functions that can create an info-rich grid overlay on NYC.
 
+import os
 import numpy as np
 from geopandas import GeoDataFrame, GeoSeries
 from shapely.geometry import Point, Polygon
@@ -17,14 +18,15 @@ LON_MIN = -74.28
 LON_MAX = -73.65
 LAT_MIN = 40.48
 LAT_MAX = 40.93
-PRECISION = 20
+PRECISION = 30
 NYC_CSV = "data/nyc_pop_data.csv"
 
 # Generates a list of PopPoints given a file to read from.
 # @param filename str The name of the file to read from.
 # @return PopPoint[] A list of PopPoints with the given data.
 def gen_pgrid(filename: str) -> list:
-    nyc_pop = pd.read_csv(filename)
+    
+    nyc_pop = pd.read_csv(os.path.join(os.path.dirname(__file__),filename))
 
     pgrid = []
 
@@ -46,7 +48,7 @@ def gen_vgrid(pgrid: list) -> list:
     lats = np.linspace(LAT_MIN, LAT_MAX, PRECISION)
     
     gpgrid = GeoSeries([Point(lon, lat) for lon in lons for lat in lats])
-    boroughs = GeoDataFrame.from_file("data/boroughs/borough_bounds.shp")
+    boroughs = GeoDataFrame.from_file(os.path.join(os.path.dirname(__file__),"data/boroughs/borough_bounds.shp"))
     in_nyc = np.array([gpgrid.within(geom) for geom in boroughs.geometry]).sum(axis=0)
     gpgrid = GeoSeries([pt for i, pt in enumerate(gpgrid) if in_nyc[i]])
 

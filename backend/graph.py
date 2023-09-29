@@ -83,7 +83,7 @@ class Edge:
     
     # Evaluates how "costly" it is to move along this edge.
     def eval(self) -> None:
-        self.weight = self.vtx1.weight * self.vtx2.weight * (self.length() ** 2)
+        self.weight = self.vtx1.weight * self.vtx2.weight * (self.length() ** 2) * 10**20
 
 # Represents a collection of vertices and any edges that may connect them.
 # @field vertices Vertex[] The set of vertices in the graph.

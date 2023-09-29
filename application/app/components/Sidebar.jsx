@@ -41,26 +41,64 @@ function StopItem({ type, name }) {
 /**
  * P
  * @param {object:{lat,lng}} startpoint
- * @param {array:[{lat,lng},...,{lat,lng}]} midpoints
  * @param {object:{lat,lng}} endpoint
+ * @param {array:[{lat,lng},...,{lat,lng}]} midpoints
+ * @param {array:[{lat,lng},...,{lat,lng}]} path
+ * @param {function} setPath
  * @param {function} setStartpoint
  * @param {function} setEndpoint
  * @returns
  */
 export function Sidebar({
     startpoint,
-    midpoints,
     endpoint,
+    midpoints,
+    path,
+    setPath,
     setStartpoint,
-    setEndpoint,}) 
+    setEndpoint}) 
     {
 
-    function generate_click_handler(e) {
-        console.log("generating path")
+    
+    // let [Path, setPath] = useState([]);
+
+    let [ loading, setLoading ] = useState(false)
+
+    async function generate_click_handler(e) {
+        setLoading(true)
+        try {
+            let generate_path = await fetch("/api/generate/path", {
+                method:"POST",
+                header: {
+                    
+                },
+                body: JSON.stringify({
+                    start_point: startpoint,
+                    end_point:  endpoint
+                })
+            })
+
+            let generation_result = await generate_path.json();
+            generation_result = await JSON.parse(generation_result.body)
+            console.log(generation_result)
+
+            let path = generation_result;
+
+            setPath(path)
+
+
+            setLoading(false)
+
+       } catch (error) {
+            //ToDo: Add alert for error
+            console.log("Error occured during path generation: " + error)
+            setLoading(false)
+
+       }
         
     }
 
-    let [Path, setPath] = useState([]);
+
 
     useEffect(() => {}, []);
 
@@ -128,9 +166,11 @@ export function Sidebar({
             colorScheme={"blue"}
             borderRadius={"20px"}
             marginTop={"0.5rem"}
-            onClick={() => {
-            // Handle button click here
-            }}>
+            onClick={generate_click_handler}
+            isDisabled={startpoint != null && endpoint != null ? false : true}
+            isLoading={loading}
+
+            >
             Generate Path
         </Button>
         </Flex>

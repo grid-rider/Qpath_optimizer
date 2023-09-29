@@ -35,7 +35,7 @@ import time
 # path between two nodes in an undirected weighted
 # graph by solving a QUBO using QAOA.
 class PathFinder:
-    max_hops = 3 # Max number of steps to go from start to end in a graph
+    max_hops = 4 # Max number of steps to go from start to end in a graph
     penalty = 99999 # Arbitrarily large number for constraint penalties
     # @param wm ndarray 2D array of edge weights
     def __init__(self, wm: np.ndarray) -> None:
@@ -84,13 +84,13 @@ class PathFinder:
         
         # NOT NECESSARY
         # Must only visit any given vertex once
-        column_sum = []
-        for i in range(n):
-            for j in range(self.max_hops):
-                column_sum.append(bv_mtx[(j, i)])
-            clmn_sum_exp = self.cf_mdl.sum(column_sum)
-            cf_sum.append(self.penalty * (clmn_sum_exp * (clmn_sum_exp - 1)))
-            column_sum.clear()
+        # column_sum = []
+        # for i in range(n):
+        #     for j in range(self.max_hops):
+        #         column_sum.append(bv_mtx[(j, i)])
+        #     clmn_sum_exp = self.cf_mdl.sum(column_sum)
+        #     cf_sum.append(self.penalty * (clmn_sum_exp * (clmn_sum_exp - 1)))
+        #     column_sum.clear()
         
         self.cf_mdl.minimize(self.cf_mdl.sum(cf_sum))
         return from_docplex_mp(self.cf_mdl)
@@ -122,8 +122,10 @@ class PathFinder:
         sol = self.solve_qp(qubo)
         print("Solved.")
         vdict = sol.variables_dict
+        print('functional val', sol.fval)
 
         hops = [int(var[-1]) for var in vdict if vdict[var]]
+        print("These are the hops: ", hops)
         path = []
         for i in hops:
             if i not in path: path.append(i)

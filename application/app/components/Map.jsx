@@ -15,7 +15,7 @@ const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
  * @param {object:{lat,lng}} startpoint
  * @param {array:[{lat,lng},...,{lat,lng}]} midpoints
  * @param {object:{lat,lng}} endpoint
- * @param {array:[{lat,lng},...,{lat,lng}]} pathpoints
+ * @param {array:[{lat,lng},...,{lat,lng}]} path
  * @param {boolean} choosingStartpoint
  * @param {boolean} usingCurser
  * @param {function} setStartpoint
@@ -26,7 +26,7 @@ export function Map({
   startpoint,
   midpoints,
   endpoint,
-  pathpoints,
+  path,
   choosingStartpoint,
   usingCurser,
   setStartpoint,
@@ -68,13 +68,15 @@ export function Map({
 
 
   useEffect(() => {
-    if( pathpoints != null && midpoints != null && endpoint != null){ //Guard
-        if(length(pathpoints) > 0 ){
-            pathLine.setPath([startpoint, ...midpoints, endpoint]);
-        }    
+    if( path != null && midpoints != null && endpoint != null){ //Guard
+      console.log("Drawing new path")
+      console.log(path)
+      if(path.length > 0 ){
+          pathLine.setPath(path);
+      }    
     }
 
-  }, [pathpoints])
+  }, [path])
 
   const handleApiLoaded = (map, maps) => {
     setStartMarker(

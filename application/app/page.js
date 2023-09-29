@@ -26,6 +26,7 @@ export default function Home() {
         setEndpoint={setEndpoint}
         choosingStartpoint={choosingStartpoint}
         usingCurser={usingCurser}
+        path={path}
       />
       <ControlPannel
         setStartpoint={setStartpoint}
@@ -33,7 +34,15 @@ export default function Home() {
         setChoosingStartpoint={setChoosingStartpoint}
         setUsingCurser={setUsingCurser}
       />
-      <Sidebar />
+      <Sidebar 
+        startpoint={startpoint}
+        endpoint={endpoint}
+        midpoints={midpoints}
+        path={path}
+        setPath={setPath}
+        setStartpoint={setStartpoint}
+        setEndpoint={setEndpoint}
+      />
     </main>
   );
 }
