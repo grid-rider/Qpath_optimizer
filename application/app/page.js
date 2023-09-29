@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { Map } from "./components/Map";
 import { ControlPannel } from "./components/ControlPannel";
+import { Sidebar } from "./components/Sidebar";
 
 export default function Home() {
   const [startpoint, setStartpoint] = useState();
@@ -13,7 +14,7 @@ export default function Home() {
   const [endpoint, setEndpoint] = useState();
   const [choosingStartpoint, setChoosingStartpoint] = useState(true);
   const [usingCurser, setUsingCurser] = useState(false);
-
+  const [path, setPath] =useState([])
 
   return (
     <main>
@@ -32,6 +33,7 @@ export default function Home() {
         setChoosingStartpoint={setChoosingStartpoint}
         setUsingCurser={setUsingCurser}
       />
+      <Sidebar />
     </main>
   );
 }
