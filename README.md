@@ -1,4 +1,4 @@
-# Qpath_optimizer by Team 7 for NYU Tandon HAQathon, Fall 2023
+# QuiQ by Team 7 for NYU Tandon HAQathon, Fall 2023
 ![Qpath_optimizer](https://github.com/grid-rider/Qpath_optimizer/assets/131626208/fb3a7af0-836a-4591-bcba-22e939015838)
 
 
