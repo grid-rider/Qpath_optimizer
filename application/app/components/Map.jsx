@@ -28,6 +28,7 @@ let heatMapData = [];
  * @param {boolean} usingCurser
  * @param {function} setStartpoint
  * @param {function} setEndpoint
+ * @param {boolean} isHeatmapVisible
  * @returns
  */
 export function Map({
@@ -39,6 +40,7 @@ export function Map({
   usingCurser,
   setStartpoint,
   setEndpoint,
+  isHeatmapVisible,
 }) {
   const [startMarker, setStartMarker] = useState(null);
   const [midpointMarkers, setMidpointMarkers] = useState([]);
@@ -86,6 +88,14 @@ export function Map({
     }
   }, [path]);
 
+  useEffect(() => {
+    if (isHeatmapVisible) {
+      heatMap?.setData(heatMapData);
+    } else {
+      heatMap?.setData([]);
+    }
+  }, [isHeatmapVisible]);
+
   async function getHeatMapData(map, maps) {
     const { HeatmapLayer } = await google.maps.importLibrary("visualization");
     for (let i = 0; i < POP_DATA.length; i++) {
@@ -100,7 +110,6 @@ export function Map({
       };
       heatMapData.push(entry);
     }
-    console.log(heatMapData);
     setHeatMap(
       new HeatmapLayer({
         data: heatMapData,
