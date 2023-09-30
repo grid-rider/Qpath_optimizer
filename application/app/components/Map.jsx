@@ -1,9 +1,17 @@
 import React, { useState, useEffect } from "react";
 import GoogleMapReact from "google-map-react";
 
+import nyc_pop_data from "../../public/nyc_pop_data";
+
 require("dotenv").config();
 
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+
+const csv = require("jquery-csv");
+
+const POP_DATA = csv.toObjects(nyc_pop_data);
+
+let heatMapData = [];
 
 /**
  * Populates the provided state variable: startpoint and endpoint.
@@ -21,6 +29,7 @@ const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
  * @param {function} setStartpoint
  * @param {function} setEndpoint
  * @param {function} setMidpoints
+ * @param {boolean} isHeatmapVisible
  * @returns
  */
 export function Map({
@@ -32,12 +41,14 @@ export function Map({
   usingCurser,
   setStartpoint,
   setEndpoint,
-  setMidpoints
+  setMidpoints,
+  isHeatmapVisible,
 }) {
   const [startMarker, setStartMarker] = useState(null);
   const [midpointMarkers, setMidpointMarkers] = useState([]);
   const [endMarker, setEndMarker] = useState(null);
   const [pathLine, setPathLine] = useState([]); // [startpoint, ...midpoints, endpoint]
+  const [heatMap, setHeatMap] = useState(null);
 
   // Set the default location of the map to be NYC
   const defaultGeoLoc = {
@@ -79,7 +90,6 @@ export function Map({
     }
   }, [startpoint, midpoints, endpoint]);
 
-
   useEffect(() => {
     if( path != null && midpoints != null && endpoint != null){ //Guard
       console.log("Drawing new path")
@@ -89,21 +99,52 @@ export function Map({
           if(path.length > 1) {
             // setMidpoints(path.slice(1,path.length-2))
             
-            setMidpointMarkers((midpointMarkers) => {
-              for(let i = 1; i < path.length - 2; i++){
-                midpointMarkers[i-1].setPosition(path[i]);
-              }
-            })
+            // setMidpointMarkers((midpointMarkers) => {
+            //   for(let i = 1; i < path.length - 2; i++){
+            //     midpointMarkers[i-1].setPosition(path[i]);
+            //   }
+            // })
 
           }
       }    
     }
+  }, [path]);
+
+  useEffect(() => {
+    if (isHeatmapVisible) {
+      heatMap?.setData(heatMapData);
+    } else {
+      heatMap?.setData([]);
+    }
+  }, [isHeatmapVisible]);
 
     console.log("Midpoints: " + midpoints)
 
-  }, [path])
+  async function getHeatMapData(map, maps) {
+    const { HeatmapLayer } = await google.maps.importLibrary("visualization");
+    for (let i = 0; i < POP_DATA.length; i++) {
+      let lat = Number(POP_DATA[i].latitude);
+      let lng = Number(POP_DATA[i].longitude);
+      let totalPop = Number(
+        POP_DATA[i].totalPop.slice(0, POP_DATA[i].totalPop.length - 1)
+      );
+      let entry = {
+        location: new maps.LatLng(lat, lng),
+        weight: totalPop,
+      };
+      heatMapData.push(entry);
+    }
+    setHeatMap(
+      new HeatmapLayer({
+        data: heatMapData,
+        map: map,
+      })
+    );
+  }
 
   const handleApiLoaded = (map, maps) => {
+    getHeatMapData(map, maps);
+
     setStartMarker(
       new maps.Marker({
         position: startpoint,
@@ -114,7 +155,6 @@ export function Map({
         },
       })
     );
-
 
     setMidpointMarkers([    
       new maps.Marker({
@@ -164,7 +204,6 @@ export function Map({
       })
     );
 
-
     setPathLine(
       new maps.Polyline({
         path: [startpoint, ...midpoints, endpoint],
@@ -177,7 +216,6 @@ export function Map({
     );
 
     console.log("map loaded");
-
   };
 
   const _onClick = ({ lat, lng }) => {
@@ -204,7 +242,7 @@ export function Map({
         yesIWantToUseGoogleMapApiInternals
         onGoogleApiLoaded={({ map, maps }) => handleApiLoaded(map, maps)}
         onClick={_onClick}
-        options={{disableDefaultUI: true}}
+        options={{ disableDefaultUI: true }}
       ></GoogleMapReact>
     </div>
   );

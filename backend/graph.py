@@ -32,7 +32,7 @@ class PopPoint:
 #                     A lower weight value means that it's more appropriate.
 # @field index int The index this has in its graph's vertex array.
 class Vertex:
-    min_dist = 1 / 60 # approx. 1 mile
+    min_dist = 0 # approx. 1 mile
     pop_rad = 1 / 60 # approx. 1 mile
     def __init__(self, lon: float, lat: float, weight: float=None, index: int=None) -> None:
         self.lon = lon

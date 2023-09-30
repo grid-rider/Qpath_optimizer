@@ -14,7 +14,8 @@ export default function Home() {
   const [endpoint, setEndpoint] = useState();
   const [choosingStartpoint, setChoosingStartpoint] = useState(true);
   const [usingCurser, setUsingCurser] = useState(false);
-  const [path, setPath] =useState([])
+  const [isHeatmapVisible, setIsHeatmapVisible] = useState(true);
+  const [path, setPath] = useState([]);
 
   return (
     <main>
@@ -26,6 +27,7 @@ export default function Home() {
         setEndpoint={setEndpoint}
         choosingStartpoint={choosingStartpoint}
         usingCurser={usingCurser}
+        isHeatmapVisible={isHeatmapVisible}
         path={path}
         setMidpoints={setMidpoints}
       />
@@ -34,8 +36,10 @@ export default function Home() {
         setEndpoint={setEndpoint}
         setChoosingStartpoint={setChoosingStartpoint}
         setUsingCurser={setUsingCurser}
+        isHeatmapVisible={isHeatmapVisible}
+        setIsHeatmapVisible={setIsHeatmapVisible}
       />
-      <Sidebar 
+      <Sidebar
         startpoint={startpoint}
         endpoint={endpoint}
         midpoints={midpoints}
