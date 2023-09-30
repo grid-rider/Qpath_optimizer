@@ -8,7 +8,7 @@ export async function POST(req) {
     
     const { start_point, end_point } = await req.json();
 
-    let generate_path = await fetch("http://127.0.0.1:80/path/generate",{
+    let generate_path = await fetch("http://ec2-3-70-226-222.eu-central-1.compute.amazonaws.com:4000/path/generate",{
       method: "POST",
       headers: {
         "Content-Type": "application/json", //Required by flask server. 
