@@ -3,11 +3,13 @@
 # @brief Implements the PathFinder class, which finds the shortest
 #        path between two nodes in an undirected weighted graph by
 #        solving a QUBO using QAOA.
+# @author Armin Ulrich 
+# @brief Minor debugging changes
 
 # Miscellaneous
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
+# import networkx as nx
 import numpy as np
-import networkx as nx
 
 # Qiskit Tools
 from qiskit_optimization import QuadraticProgram

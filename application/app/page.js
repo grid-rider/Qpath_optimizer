@@ -27,6 +27,7 @@ export default function Home() {
         choosingStartpoint={choosingStartpoint}
         usingCurser={usingCurser}
         path={path}
+        setMidpoints={setMidpoints}
       />
       <ControlPannel
         setStartpoint={setStartpoint}

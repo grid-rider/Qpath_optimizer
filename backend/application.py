@@ -1,3 +1,5 @@
+# @author Armin Ulrich 
+# @brief Rest API implementation of QuiQ and Flask server setup
 from flask import Flask, request
 import json, sys, os
 

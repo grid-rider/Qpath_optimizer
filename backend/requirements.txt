@@ -1,0 +1,7 @@
+numpy
+flask
+shapely
+geopandas
+pandas
+docplex
+qiskit

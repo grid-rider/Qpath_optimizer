@@ -43,3 +43,28 @@ Users can use the side panel on the right to view their choice and generate the 
 
 ### [PathFinder.py](https://github.com/grid-rider/Qpath_optimizer/blob/dev/backend/PathFinder.py)
 "PathFinder.py" imports data structures and maps created by "graph.py" and "map.py" to construct the best path between two points entered by the user. PathFinder is the backbone of the entire backend algorithms as it manages the cost of each vertex using classical computing and utilize quantum computations to return the final result as a list of points.
+
+# Running QuiQ
+
+QuiQ relies on a backend and frontend server to run the application. To run the application locally the following steps have to be staken. 
+
+### Frontend Server
+The frontend server, which is contained within `/application` is run through a web pack dev server . In one terminal window of the application directory on must first install all dependencies:
+
+    npm install
+
+Then you're ready to go. Just run the development server through the following command (instructions also listed in application folder):
+
+    npm run dev
+### Backend  Server
+The backend server, which is contained within `/backend` is run through Flask . Open a second terminal window and run the Flask application through the following command:
+
+    python3 application.py
+
+> Note: Both the Frontend and Backend server must be running for the web app to run correctly
+
+### Google Maps Key
+The frontend also relies on a .env file that is placed into the root of `/application`. The .env file contains a google maps key that is generated, and look as follows:
+
+    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY={Your Key}
+

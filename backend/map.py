@@ -1,5 +1,5 @@
 # @file map.py
-# @author Evan Brody
+# @author Evan Brody, Armin Ulrich
 # @brief Defines functions that can create an info-rich grid overlay on NYC.
 
 import os

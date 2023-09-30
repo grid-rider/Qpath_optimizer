@@ -20,6 +20,7 @@ const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
  * @param {boolean} usingCurser
  * @param {function} setStartpoint
  * @param {function} setEndpoint
+ * @param {function} setMidpoints
  * @returns
  */
 export function Map({
@@ -31,6 +32,7 @@ export function Map({
   usingCurser,
   setStartpoint,
   setEndpoint,
+  setMidpoints
 }) {
   const [startMarker, setStartMarker] = useState(null);
   const [midpointMarkers, setMidpointMarkers] = useState([]);
@@ -64,6 +66,17 @@ export function Map({
         endMarker.setPosition(endpoint);
       }
     }
+
+    if (midpointMarkers != null) {
+      if (midpoints == null) {
+        for (let marker of midpointMarkers){
+          marker.setPosition(null);
+        }
+        pathLine.setPath([]);
+      } else if (midpoints != null) {
+
+      }
+    }
   }, [startpoint, midpoints, endpoint]);
 
 
@@ -73,6 +86,13 @@ export function Map({
       console.log(path)
       if(path.length > 0 ){
           pathLine.setPath(path);
+          if(path.length > 1) {
+            setMidpoints(path.slice(1,path.length-2))
+
+            // for(let i = 2; i < path.length - 2; i++){
+              // midpointMarker.setPosition(path[i]);
+            // }
+          }
       }    
     }
 

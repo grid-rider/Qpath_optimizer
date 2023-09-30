@@ -169,7 +169,6 @@ export function Sidebar({
             onClick={generate_click_handler}
             isDisabled={startpoint != null && endpoint != null ? false : true}
             isLoading={loading}
-
             >
             Generate Path
         </Button>
