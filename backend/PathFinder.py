@@ -86,13 +86,13 @@ class PathFinder:
         
         # NOT NECESSARY
         # Must only visit any given vertex once
-        # column_sum = []
-        # for i in range(n):
-        #     for j in range(self.max_hops):
-        #         column_sum.append(bv_mtx[(j, i)])
-        #     clmn_sum_exp = self.cf_mdl.sum(column_sum)
-        #     cf_sum.append(self.penalty * (clmn_sum_exp * (clmn_sum_exp - 1)))
-        #     column_sum.clear()
+        column_sum = []
+        for i in range(n):
+            for j in range(self.max_hops):
+                column_sum.append(bv_mtx[(j, i)])
+            clmn_sum_exp = self.cf_mdl.sum(column_sum)
+            cf_sum.append(self.penalty * (clmn_sum_exp * (clmn_sum_exp - 1)))
+            column_sum.clear()
         
         self.cf_mdl.minimize(self.cf_mdl.sum(cf_sum))
         return from_docplex_mp(self.cf_mdl)

@@ -87,14 +87,19 @@ export function Map({
       if(path.length > 0 ){
           pathLine.setPath(path);
           if(path.length > 1) {
-            setMidpoints(path.slice(1,path.length-2))
+            // setMidpoints(path.slice(1,path.length-2))
+            
+            setMidpointMarkers((midpointMarkers) => {
+              for(let i = 1; i < path.length - 2; i++){
+                midpointMarkers[i-1].setPosition(path[i]);
+              }
+            })
 
-            // for(let i = 2; i < path.length - 2; i++){
-              // midpointMarker.setPosition(path[i]);
-            // }
           }
       }    
     }
+
+    console.log("Midpoints: " + midpoints)
 
   }, [path])
 
@@ -111,19 +116,42 @@ export function Map({
     );
 
 
-    setMidpointMarkers(
-      midpoints.map((midpoint) => {
-        return new maps.Marker({
-          position: midpoint,
+    setMidpointMarkers([    
+      new maps.Marker({
+          position: null,
           map,
           title: "Midpoint",
           icon: {
             url: "/midpoint.svg",
           },
-        });
-      })
+        }),
+        new maps.Marker({
+          position: null,
+          map,
+          title: "Midpoint",
+          icon: {
+            url: "/midpoint.svg",
+          },
+        }),
+        new maps.Marker({
+          position: null,
+          map,
+          title: "Midpoint",
+          icon: {
+            url: "/midpoint.svg",
+          },
+        }),
+        new maps.Marker({
+          position: null,
+          map,
+          title: "Midpoint",
+          icon: {
+            url: "/midpoint.svg",
+          },
+        })
+      ]
+    
     );
-
 
     setEndMarker(
       new maps.Marker({
