@@ -151,5 +151,6 @@ github: https://github.com/brje0
 linkedin: https://www.linkedin.com/in/xiaoteng-frank-liu-95277b232/
 github: https://github.com/lapisliu
 
-### Ninad 
+### Ninad
+linkedin: https://www.linkedin.com/in/ninad-moharir
 github: https://github.com/ninadwastaken
