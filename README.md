@@ -154,3 +154,7 @@ github: https://github.com/lapisliu
 ### Ninad
 linkedin: https://www.linkedin.com/in/ninad-moharir
 github: https://github.com/ninadwastaken
+
+### Heejin Jang
+linkedin: https://www.linkedin.com/in/heejinjang 
+github: https://github.com/hj2118
